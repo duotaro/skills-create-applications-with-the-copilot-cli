@@ -128,16 +128,12 @@ describe('Calculator - Basic Operations', () => {
   });
 
   describe('Edge Cases - Invalid Operators', () => {
-    test('invalid operator % should return error message', () => {
-      expect(performCalculation(5, '%', 2)).toBe('Error: Invalid operator. Use +, -, *, or /');
-    });
-
     test('invalid operator ^ should return error message', () => {
-      expect(performCalculation(5, '^', 2)).toBe('Error: Invalid operator. Use +, -, *, or /');
+      expect(performCalculation(5, '^', 2)).toBe('Error: Invalid operator. Use +, -, *, /, %, **, or sqrt');
     });
 
     test('invalid operator with lowercase should return error message', () => {
-      expect(performCalculation(5, 'x', 2)).toBe('Error: Invalid operator. Use +, -, *, or /');
+      expect(performCalculation(5, 'x', 2)).toBe('Error: Invalid operator. Use +, -, *, /, %, **, or sqrt');
     });
   });
 
@@ -162,6 +158,76 @@ describe('Calculator - Basic Operations', () => {
 
     test('floating point subtraction: 0.3 - 0.1 should be approximately 0.2', () => {
       expect(performCalculation(0.3, '-', 0.1)).toBeCloseTo(0.2, 5);
+    });
+  });
+
+  describe('Modulo', () => {
+    test('10 % 3 should equal 1', () => {
+      expect(performCalculation(10, '%', 3)).toBe(1);
+    });
+
+    test('15 % 5 should equal 0', () => {
+      expect(performCalculation(15, '%', 5)).toBe(0);
+    });
+
+    test('negative numbers: -10 % 3 should equal -1', () => {
+      expect(performCalculation(-10, '%', 3)).toBe(-1);
+    });
+
+    test('decimals: 10.5 % 3 should be approximately 1.5', () => {
+      expect(performCalculation(10.5, '%', 3)).toBeCloseTo(1.5, 5);
+    });
+
+    test('modulo by zero: 5 % 0 should return error message', () => {
+      expect(performCalculation(5, '%', 0)).toBe('Error: Cannot modulo by zero');
+    });
+  });
+
+  describe('Exponentiation', () => {
+    test('2 ** 10 should equal 1024', () => {
+      expect(performCalculation(2, '**', 10)).toBe(1024);
+    });
+
+    test('3 ** 3 should equal 27', () => {
+      expect(performCalculation(3, '**', 3)).toBe(27);
+    });
+
+    test('negative base: -2 ** 3 should equal -8', () => {
+      expect(performCalculation(-2, '**', 3)).toBe(-8);
+    });
+
+    test('zero exponent: 5 ** 0 should equal 1', () => {
+      expect(performCalculation(5, '**', 0)).toBe(1);
+    });
+
+    test('fractional exponent: 4 ** 0.5 should equal 2', () => {
+      expect(performCalculation(4, '**', 0.5)).toBe(2);
+    });
+
+    test('negative exponent: 2 ** -2 should equal 0.25', () => {
+      expect(performCalculation(2, '**', -2)).toBe(0.25);
+    });
+  });
+
+  describe('Square Root', () => {
+    test('sqrt of 9 should equal 3', () => {
+      expect(performCalculation(9, 'sqrt', null)).toBe(3);
+    });
+
+    test('sqrt of 25 should equal 5', () => {
+      expect(performCalculation(25, 'sqrt', null)).toBe(5);
+    });
+
+    test('sqrt of 2 should be approximately 1.41421', () => {
+      expect(performCalculation(2, 'sqrt', null)).toBeCloseTo(1.41421, 5);
+    });
+
+    test('sqrt of 0 should equal 0', () => {
+      expect(performCalculation(0, 'sqrt', null)).toBe(0);
+    });
+
+    test('sqrt of negative number should return error message', () => {
+      expect(performCalculation(-4, 'sqrt', null)).toBe('Error: Cannot take square root of a negative number');
     });
   });
 });

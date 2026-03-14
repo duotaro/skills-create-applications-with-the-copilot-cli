@@ -8,6 +8,9 @@
  * - Subtraction (-)
  * - Multiplication (*)
  * - Division (/)
+ * - Modulo (%)
+ * - Exponentiation (**)
+ * - Square Root (sqrt)
  */
 
 const readline = require('readline');
@@ -20,7 +23,8 @@ const rl = readline.createInterface({
 function displayWelcome() {
   console.log('\n╔════════════════════════════════════╗');
   console.log('║     Node.js CLI Calculator         ║');
-  console.log('║  Supported: +, -, *, /            ║');
+  console.log('║  Supported: +, -, *, /, %, **     ║');
+  console.log('║  Also: sqrt <number>               ║');
   console.log('╚════════════════════════════════════╝\n');
 }
 
@@ -47,8 +51,26 @@ function performCalculation(num1, operator, num2) {
       }
       result = num1 / num2;
       break;
+    case '%':
+      // Modulo
+      if (num2 === 0) {
+        return 'Error: Cannot modulo by zero';
+      }
+      result = num1 % num2;
+      break;
+    case '**':
+      // Exponentiation
+      result = Math.pow(num1, num2);
+      break;
+    case 'sqrt':
+      // Square Root (uses num1 only)
+      if (num1 < 0) {
+        return 'Error: Cannot take square root of a negative number';
+      }
+      result = Math.sqrt(num1);
+      break;
     default:
-      return 'Error: Invalid operator. Use +, -, *, or /';
+      return 'Error: Invalid operator. Use +, -, *, /, %, **, or sqrt';
   }
 
   return result;
@@ -67,8 +89,21 @@ function startCalculator() {
 
       const parts = input.trim().split(/\s+/);
 
+      if (parts.length === 2 && parts[0].toLowerCase() === 'sqrt') {
+        const num = parseFloat(parts[1]);
+        if (isNaN(num)) {
+          console.log('Error: Input must be a number.\n');
+          askQuestion();
+          return;
+        }
+        const result = performCalculation(num, 'sqrt', null);
+        console.log(`\nResult: sqrt(${num}) = ${result}\n`);
+        askQuestion();
+        return;
+      }
+
       if (parts.length !== 3) {
-        console.log('Invalid input. Please use format: <number> <operator> <number>\n');
+        console.log('Invalid input. Please use format: <number> <operator> <number> or sqrt <number>\n');
         askQuestion();
         return;
       }
