@@ -8,6 +8,9 @@
  * - Subtraction (-)
  * - Multiplication (*)
  * - Division (/)
+ * - Modulo (%)
+ * - Exponentiation (^)
+ * - Square Root (sqrt)
  */
 
 const readline = require('readline');
@@ -17,10 +20,29 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+function modulo(a, b) {
+  if (b === 0) {
+    throw new Error('Cannot divide by zero');
+  }
+  return a % b;
+}
+
+function power(base, exponent) {
+  return Math.pow(base, exponent);
+}
+
+function squareRoot(n) {
+  if (n < 0) {
+    throw new Error('Cannot calculate square root of a negative number');
+  }
+  return Math.sqrt(n);
+}
+
 function displayWelcome() {
   console.log('\n╔════════════════════════════════════╗');
   console.log('║     Node.js CLI Calculator         ║');
-  console.log('║  Supported: +, -, *, /            ║');
+  console.log('║  Supported: +, -, *, /, %, ^      ║');
+  console.log('║  Unary: sqrt                       ║');
   console.log('╚════════════════════════════════════╝\n');
 }
 
@@ -29,26 +51,50 @@ function performCalculation(num1, operator, num2) {
 
   switch (operator) {
     case '+':
-      // Addition
       result = num1 + num2;
       break;
     case '-':
-      // Subtraction
       result = num1 - num2;
       break;
     case '*':
-      // Multiplication
       result = num1 * num2;
       break;
     case '/':
-      // Division
       if (num2 === 0) {
         return 'Error: Cannot divide by zero';
       }
       result = num1 / num2;
       break;
+    case '%':
+      try {
+        result = modulo(num1, num2);
+      } catch (error) {
+        return `Error: ${error.message}`;
+      }
+      break;
+    case '^':
+      result = power(num1, num2);
+      break;
     default:
-      return 'Error: Invalid operator. Use +, -, *, or /';
+      return 'Error: Invalid operator. Use +, -, *, /, %, or ^';
+  }
+
+  return result;
+}
+
+function performUnaryCalculation(operator, num) {
+  let result;
+
+  switch (operator) {
+    case 'sqrt':
+      try {
+        result = squareRoot(num);
+      } catch (error) {
+        return `Error: ${error.message}`;
+      }
+      break;
+    default:
+      return 'Error: Invalid unary operator. Use sqrt';
   }
 
   return result;
@@ -67,24 +113,34 @@ function startCalculator() {
 
       const parts = input.trim().split(/\s+/);
 
-      if (parts.length !== 3) {
-        console.log('Invalid input. Please use format: <number> <operator> <number>\n');
+      let result;
+      if (parts.length === 2 && parts[0] === 'sqrt') {
+        const num = parseFloat(parts[1]);
+        if (isNaN(num)) {
+          console.log('Error: Input must be a number.\n');
+          askQuestion();
+          return;
+        }
+        result = performUnaryCalculation('sqrt', num);
+        console.log(`\nResult: sqrt(${num}) = ${result}\n`);
+      } else if (parts.length === 3) {
+        const num1 = parseFloat(parts[0]);
+        const operator = parts[1];
+        const num2 = parseFloat(parts[2]);
+
+        if (isNaN(num1) || isNaN(num2)) {
+          console.log('Error: First and third inputs must be numbers.\n');
+          askQuestion();
+          return;
+        }
+
+        result = performCalculation(num1, operator, num2);
+        console.log(`\nResult: ${num1} ${operator} ${num2} = ${result}\n`);
+      } else {
+        console.log('Invalid input. Use format: <number> <operator> <number> or sqrt <number>\n');
         askQuestion();
         return;
       }
-
-      const num1 = parseFloat(parts[0]);
-      const operator = parts[1];
-      const num2 = parseFloat(parts[2]);
-
-      if (isNaN(num1) || isNaN(num2)) {
-        console.log('Error: First and third inputs must be numbers.\n');
-        askQuestion();
-        return;
-      }
-
-      const result = performCalculation(num1, operator, num2);
-      console.log(`\nResult: ${num1} ${operator} ${num2} = ${result}\n`);
 
       askQuestion();
     });
@@ -93,7 +149,7 @@ function startCalculator() {
   askQuestion();
 }
 
-module.exports = { performCalculation };
+module.exports = { performCalculation, performUnaryCalculation, modulo, power, squareRoot };
 
 if (require.main === module) {
   startCalculator();
